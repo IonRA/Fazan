@@ -30,6 +30,9 @@ public class Fazan implements Joc{
             if (cuvant.length() > 2)
                 prefixe.add(cuvant.substring(0, 2));
         }
+        
+        br.close();
+        fr.close();
     }
 
     public Fazan()
@@ -156,6 +159,8 @@ public class Fazan implements Joc{
                         jucatori.get(jucatorCurent).getScor() : scorMax;
             }
         }
+        
+        citeste.close();
 
         System.out.println("Jocul s-a terminat!");
     }
