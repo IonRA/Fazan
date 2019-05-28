@@ -30,7 +30,7 @@ public class Fazan implements Joc{
             if (cuvant.length() > 2)
                 prefixe.add(cuvant.substring(0, 2));
         }
-        
+
         br.close();
         fr.close();
     }
@@ -62,6 +62,10 @@ public class Fazan implements Joc{
         return false;
     }
 
+    private char genereazaLiteraInceput() {
+        return (char)('a' + intamplator.nextInt(26));
+    }
+
     public void startJoc() throws IOException{
         System.out.println("Salutare si bine ati venit in jocul FAZAN!\nIntroduceti numarul de jucatori din joc: ");
 
@@ -87,46 +91,79 @@ public class Fazan implements Joc{
         char literaInceput;
         String cuvantCurent, cuvantPrecedent = null;
 
-        System.out.println("<<<SA INCEAPA JOCUL>>>\n");
+        System.out.println("<<<SA INCEAPA JOCUL>>>");
         int runda = 1, jucatorCurent = 0;
 
         while (scorMax != 5)
         {
             if (nrRaspunsuri == 0)
             {
-                System.out.println("Runda " + runda);
-                codLiteraInceput = intamplator.nextInt(26);
-                literaInceput = (char)('a' + codLiteraInceput);
+                System.out.println("\nRunda " + runda);
+                literaInceput = genereazaLiteraInceput();
 
                 System.out.println("Litera de inceput este \'" + String.valueOf(literaInceput) + "\'");
 
                 System.out.println("Jucatorul " + jucatori.get(jucatorCurent).getNume() + " sa introduca un cuvant:");
 
-                while ((cuvantCurent = citeste.next()).charAt(0) != literaInceput ||
-                        !esteCuvant(cuvantCurent) || incuieJucator(cuvantCurent))
+                while ((cuvantCurent = citeste.next()).charAt(0) != literaInceput || !esteCuvant(cuvantCurent) ||
+                        incuieJucator(cuvantCurent) || cuvinteSpuse.contains(cuvantCurent))
                 {
-                    System.out.println("Ai inchis prima tura sau cuvantul este invalid. Introduceti un alt cuvant! ");
+                    System.out.println("Ai in inchis prima tura sau cuvantul este invalid. Introduceti un alt cuvant! ");
                 }
 
                 cuvantPrecedent = cuvantCurent;
-
                 ++nrRaspunsuri;
-                jucatorCurent = (jucatorCurent + 1) % nrJucatori;
             }
             else if (nrRaspunsuri < nrJucatori)
             {
-                System.out.println("Jucatorul " + jucatori.get(jucatorCurent).getNume() + " sa introduca un cuvant:");
-
-                while (!verificaPrefixSufix(cuvantCurent = citeste.next(), cuvantPrecedent) ||
-                        !esteCuvant(cuvantCurent) || incuieJucator(cuvantCurent))
+                while (true)
                 {
-                    System.out.println("Nu poti inchide in prima tura. Introduceti un alt cuvant! ");
+                    System.out.println("Jucatorul " + jucatori.get(jucatorCurent).getNume() + " sa introduca un cuvant:");
+
+                    cuvantCurent = citeste.next();
+
+                    if (!verificaPrefixSufix(cuvantCurent, cuvantPrecedent) || !esteCuvant(cuvantCurent))
+                    {
+                        jucatori.get(jucatorCurent).incrementeazaScor();
+                        System.out.println("Jucatorul " + jucatori.get(jucatorCurent).getNume() + " are scorul de " +
+                                jucatori.get(jucatorCurent).getScor() + " puncte");
+                        ++runda;
+                        nrRaspunsuri = 0;
+
+                        break;
+                    }
+                    else if (cuvinteSpuse.contains(cuvantCurent))
+                    {
+                        int scorPrecedent = jucatori.get(jucatorCurent).getScor();
+                        jucatori.get(jucatorCurent).incrementeazaPenalizari();
+
+                        System.out.println("Jucatorul " + jucatori.get(jucatorCurent).getNume() + " are " +
+                                jucatori.get(jucatorCurent).getPenalizari() + " penalizari");
+
+                        ++nrRaspunsuri;
+
+                        if (scorPrecedent != jucatori.get(jucatorCurent).getScor())
+                        {
+                            System.out.println("Jucatorul " + jucatori.get(jucatorCurent).getNume() + " are scorul de " +
+                                    jucatori.get(jucatorCurent).getScor() + " puncte");
+
+                            ++runda;
+                            nrRaspunsuri = 0;
+                        }
+                        break;
+                    }
+                    else if (!incuieJucator(cuvantCurent))
+                    {
+                        cuvinteSpuse.add(cuvantCurent);
+                        cuvantPrecedent = cuvantCurent;
+                        ++nrRaspunsuri;
+                        break;
+                    }
+                    else System.out.println("Nu ai voie sa inchizi in prima tura");
                 }
 
-                cuvantPrecedent = cuvantCurent;
-
-                ++nrRaspunsuri;
-                jucatorCurent = (jucatorCurent + 1) % nrJucatori;
+                scorMax = scorMax < jucatori.get(jucatorCurent).getScor() ?
+                        jucatori.get(jucatorCurent).getScor() : scorMax;
             }
             else
             {
@@ -145,6 +182,11 @@ public class Fazan implements Joc{
                     int scorPrecedent = jucatori.get(jucatorCurent).getScor();
                     jucatori.get(jucatorCurent).incrementeazaPenalizari();
 
+                    System.out.println("Jucatorul " + jucatori.get(jucatorCurent).getNume() + " are " +
+                            jucatori.get(jucatorCurent).getPenalizari() + " penalizari");
+
+                    ++nrRaspunsuri;
+
                     if (scorPrecedent != jucatori.get(jucatorCurent).getScor())
                     {
                         System.out.println("Jucatorul " + jucatori.get(jucatorCurent).getNume() + " are scorul de " +
@@ -154,14 +196,32 @@ public class Fazan implements Joc{
                         nrRaspunsuri = 0;
                     }
                 }
+                else if (incuieJucator(cuvantCurent))
+                {
+                    cuvinteSpuse.add(cuvantCurent);
+                    jucatori.get((jucatorCurent + 1) %nrJucatori).incrementeazaScor();
+                    System.out.println("Jucatorul " + jucatori.get((jucatorCurent + 1) %nrJucatori).getNume() +
+                                       " are scorul de " + jucatori.get((jucatorCurent + 1) %nrJucatori).getScor() +
+                                       " puncte");
+                    ++runda;
+                    nrRaspunsuri = 0;
+                }
+                else
+                {
+                    cuvinteSpuse.add(cuvantCurent);
+                    cuvantPrecedent = cuvantCurent;
+                    ++nrRaspunsuri;
+                }
 
                 scorMax = scorMax < jucatori.get(jucatorCurent).getScor() ?
                         jucatori.get(jucatorCurent).getScor() : scorMax;
             }
+
+            jucatorCurent = (jucatorCurent + 1) % nrJucatori;
         }
-        
+
         citeste.close();
 
-        System.out.println("Jocul s-a terminat!");
+        System.out.println("\nJocul s-a terminat!");
     }
 }
