@@ -35,8 +35,7 @@ public class Fazan implements Joc{
         fr.close();
     }
 
-    public Fazan()
-    {
+    public Fazan(){
         initializareJoc();
     }
 
