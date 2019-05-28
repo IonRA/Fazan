@@ -81,7 +81,7 @@ public class Fazan implements Joc{
 
         for (int i = 1; i <= nrJucatori; ++i)
         {
-            System.out.println("Introduceti numelele jucatorului nr " + i + ": ");
+            System.out.println("Introduceti numele jucatorului nr " + i + ": ");
             numeJucator = citeste.next();
             jucatori.add(new Jucator(numeJucator));
         }
@@ -90,7 +90,7 @@ public class Fazan implements Joc{
         char literaInceput;
         String cuvantCurent, cuvantPrecedent = null;
 
-        System.out.println("<<<SA INCEAPA JOCUL>>>");
+        System.out.println("\n<<<SA INCEAPA JOCUL>>>");
         int runda = 1, jucatorCurent = 0;
 
         while (scorMax != 5)
