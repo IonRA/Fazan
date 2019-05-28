@@ -1,15 +1,12 @@
 package joc;
 
-import java.io.IOException;
-
 public class IncepeJoc {
 
     public static void main(String[] args){
         try {
-            Fazan.initializareDictionar("/home/ion/Desktop/dictionar.txt");
+            Fazan.initializareDictionar("dictionar.txt");
             Joc joc = new Fazan();
             joc.startJoc();
-
         }
         catch (Exception e)
         {
