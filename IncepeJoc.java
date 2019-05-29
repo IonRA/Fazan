@@ -8,8 +8,7 @@ public class IncepeJoc {
             Joc joc = new Fazan();
             joc.startJoc();
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
